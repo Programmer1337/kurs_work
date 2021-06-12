@@ -1,0 +1,47 @@
+
+<details >
+    <summary>Sort by</summary>
+    <ul>
+        <li><a href="/sortBy/Name" style="color:#000">Name</a></li>
+        <li><a href="/sortBy/Date" style="color:#000">Date</a></li>
+        <li><a href="/sortBy/Size" style="color:#000">Size</a></li>
+
+    </ul>
+</details>
+
+
+<div class="content">
+    {{#if files}}
+
+
+
+
+
+        <ul class="collection">
+
+            {{#each files}}
+                <li class="collection-item avatar">
+                    <i class="material-icons circle">folder</i>
+                    <span class="title">{{this.filename}}</span>
+                    <p>{{this.size}}<br>
+
+                     Uploaded at {{this.parsed_date}}
+                    </p>
+                    <a class="secondary-content"> <a href="/delete/{{this.id}}"
+                                                     class="secondary-content"><i
+                            class="material-icons" title="Delete file">delete</i></a><a
+                            href="/download/{{this.filename}}"><i
+                            class="material-icons" title="Download file">file_download</i></a></a>
+                </li>
+            {{/each}}
+        </ul>
+    {{/if}}
+    {{#unless files}}
+        <div class="no_files">
+            <h5>There no files yet. But you can change it by <a href="/add_new">adding</a> some   </h5>
+        </div>
+    {{/unless}}
+</div>
+
+
+
