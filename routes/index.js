@@ -108,9 +108,10 @@ router.get('/files/', async (req, res) => {
                     size: (element.length < 1048576) ? `${Math.trunc(element.length * 100 / 1024) / 100}KB` : `${Math.trunc(100 * element.length / 1024 / 1024) / 100}MB`,
                     filename: element.filename,
                     uploadDate: element.uploadDate,
-                    parsed_date: Date.getHours().toString().padStart(2, '0') + ':' + Date.getMinutes().toString().padStart(2, '0') + ' ' + Date.getDay().toString().padStart(2, '0') + '.' + Date.getMonth().toString().padStart(2, '0') + '.' + Date.getFullYear().toString().padStart(2, '0'),
+                    parsed_date: (Date.getUTCHours()+3).toString().padStart(2, '0') + ':' + Date.getMinutes().toString().padStart(2, '0') + ' ' + Date.getDate().toString().padStart(2, '0') + '.' + (Date.getMonth()+1).toString().padStart(2, '0') + '.' + Date.getFullYear().toString().padStart(2, '0'),
                     id: element._id
                 })
+                    console.log(Date+' '+Date.getDate()+' and month is '+Date.getMonth())
             })
 
             res.render('files', {
