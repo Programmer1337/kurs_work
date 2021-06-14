@@ -100,23 +100,23 @@ router.get('/files/', async (req, res) => {
         gfs.files.find().toArray((err, files) => {
             // if (!files || files.length === 0)
             //     return res.status(404).json({err: 'No files exists'})
-            let ret_mas = []
+            let files_array = []
             files.forEach(element => {
                 let Date = element.uploadDate
-                ret_mas.push({
+                files_array.push({
                     size_in_bytes: element.length,
                     size: (element.length < 1048576) ? `${Math.trunc(element.length * 100 / 1024) / 100}KB` : `${Math.trunc(100 * element.length / 1024 / 1024) / 100}MB`,
                     filename: element.filename,
                     uploadDate: element.uploadDate,
-                    parsed_date: (Date.getUTCHours()+3).toString().padStart(2, '0') + ':' + Date.getMinutes().toString().padStart(2, '0') + ' ' + Date.getDate().toString().padStart(2, '0') + '.' + (Date.getMonth()+1).toString().padStart(2, '0') + '.' + Date.getFullYear().toString().padStart(2, '0'),
+                    parsed_date: (Date.getUTCHours() + 3).toString().padStart(2, '0') + ':' + Date.getMinutes().toString().padStart(2, '0') + ' ' + Date.getUTCDate().toString().padStart(2, '0') + '.' + (Date.getUTCMonth() + 1).toString().padStart(2, '0') + '.' + Date.getUTCFullYear().toString().padStart(2, '0'),
                     id: element._id
                 })
-                    console.log(Date+' '+Date.getDate()+' and month is '+Date.getMonth())
+                console.log(Date + ' ' + Date.getDate() + ' and month is ' + Date.getMonth())
             })
 
             res.render('files', {
-                files: ret_mas.sort((a, b) => {
-                    console.log(typeof ret_mas[1].uploadDate)
+                files: files_array.sort((a, b) => {
+                    console.log(typeof files_array[1].uploadDate)
                     if (a[sortType] < b[sortType]) {
                         return -1;
                     }
@@ -160,33 +160,36 @@ router.get('/home', (req, res) => {
 })
 
 router.get('/download/:filename', async (req, res, next) => {
-    fs.unlink(ShouldBeDeletedNext, () => {
-        console.log('Файл удален')
-    })
+    try {
+        fs.unlink(ShouldBeDeletedNext, () => {
+            console.log('Файл удален')
+        })
 
-    console.log(`Поступил запрос на скачивание ${req.params.filename}`)
-    const filename = req.params.filename;
-    console.log(filename)
-    var gridfsbucket = new mongoose.mongo.GridFSBucket(conn.db, {
-        chunkSizeBytes: 1024,
-        bucketName: 'uploads'
-    });
-
-    gridfsbucket.openDownloadStreamByName(filename).pipe(fs.createWriteStream('./' + filename)).on('error', function (error) {
-        console.log("error" + error);
-        res.status(404).json({
-            msg: error.message
+        console.log(`Поступил запрос на скачивание ${req.params.filename}`)
+        const filename = req.params.filename;
+        console.log(filename)
+        var gridfsbucket = new mongoose.mongo.GridFSBucket(conn.db, {
+            chunkSizeBytes: 1024,
+            bucketName: 'uploads'
         });
-    }).on('finish', async function () {
-        console.log('Файл загружен на сервер');
 
-        const file = `./${req.params.filename}`;
-        await res.download(file)
-        console.log('Файл начал загрузку на клиент')
-        ShouldBeDeletedNext = file
+        gridfsbucket.openDownloadStreamByName(filename).pipe(fs.createWriteStream('./' + filename)).on('error', function (error) {
+            console.log("error" + error);
+            res.status(404).json({
+                msg: error.message
+            });
+        }).on('finish', async function () {
+            console.log('Файл загружен на сервер');
 
-    });
+            const file = `./${req.params.filename}`;
+            await res.download(file)
+            console.log('Файл начал загрузку на клиент')
+            ShouldBeDeletedNext = file
 
+        });
+    } catch (e) {
+        res.render('error')
+    }
 
 })
 

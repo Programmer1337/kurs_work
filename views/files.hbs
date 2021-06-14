@@ -20,18 +20,18 @@
         <ul class="collection " >
 
             {{#each files}}
-                <li class="collection-item avatar  blue-grey lighten-1">
+                <li class="collection-item avatar  grey lighten-1">
                     <i class="material-icons circle">folder</i>
                     <span class="title">{{this.filename}}</span>
                     <p>{{this.size}}<br>
 
                      Uploaded at {{this.parsed_date}}
                     </p>
-                    <a class="secondary-content " > <a style="color: #760404" href="/delete/{{this.id}}"
+                    <a class="secondary-content " > <a style="color: #b10505" href="/delete/{{this.id}}"
                                                        class="secondary-content"><i
                             class="material-icons" title="Delete file">delete</i></a><a
                             href="/download/{{this.filename}}"><i
-                            class="material-icons" title="Download file" style="color: #171e55">file_download</i></a></a>
+                            class="material-icons" title="Download file" style="color: #171e55"         >file_download</i></a></a>
                 </li>
             {{/each}}
         </ul>
