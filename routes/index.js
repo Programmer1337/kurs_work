@@ -1,17 +1,10 @@
 var express = require('express');
 var router = express.Router();
-let mongo = require('mongodb').MongoClient
-let db = require('mongodb').Db
 let mongoose = require('mongoose')
-let assert = require('assert')
-const File = require('../file')
-const path = require('path')
 const multer = require('multer')
 const GridFsStorage = require('multer-gridfs-storage')
 const Grid = require('gridfs-stream')
-const bodyparser = require('body-parser')
 const fs = require('fs')
-const streamifier = require('streamifier')
 
 let ShouldBeDeletedNext = ''
 const url = 'mongodb+srv://Igor:FMKwLV4wxaT9dcT@cluster0.u2jtm.mongodb.net/my_base?retryWrites=true&w=majority'
@@ -23,33 +16,6 @@ router.get('/', function (req, res, next) {
     res.render('home')
 })
 
-// router.get('/get-data', async (req, res, next) => {
-//     await mongoose.connect(url, {
-//         useNewUrlParser: true,
-//         useUnifiedTopology: true,
-//         useCreateIndex: true
-//     })
-//     let found = await File.find({content: 'yr'}).lean()
-//     console.log(found)
-//     res.render('index', {items: found})
-// })
-
-// router.post('/insert', async (req, res, next) => {
-//     await mongoose.connect(url, {
-//         useNewUrlParser: true,
-//         useUnifiedTopology: true,
-//         useCreateIndex: true
-//     })
-//     let file = new File({
-//         name: req.body.title,
-//         content: req.body.content,
-//         format: req.body.author
-//     })
-//     console.log(file)
-//     await file.save()
-//     console.log('SAVED')
-//     res.redirect('/')
-// })
 let gfs
 
 const conn = mongoose.createConnection(url)
@@ -75,11 +41,6 @@ router.post('/upload', upload.single('file'), (req, res, next) => {
     res.render('thanks')
 })
 
-
-router.post('/update', (req, res, next) => {
-
-})
-
 router.get('/delete/:id', (req, res, next) => {
 
     console.log('Запрос на удаление файла с ID:' + req.params.id)
@@ -98,8 +59,6 @@ let sortType
 router.get('/files/', async (req, res) => {
     try {
         gfs.files.find().toArray((err, files) => {
-            // if (!files || files.length === 0)
-            //     return res.status(404).json({err: 'No files exists'})
             let files_array = []
             files.forEach(element => {
                 let Date = element.uploadDate
@@ -113,10 +72,8 @@ router.get('/files/', async (req, res) => {
                 })
                 console.log(Date + ' ' + Date.getDate() + ' and month is ' + Date.getMonth())
             })
-
             res.render('files', {
                 files: files_array.sort((a, b) => {
-                    console.log(typeof files_array[1].uploadDate)
                     if (a[sortType] < b[sortType]) {
                         return -1;
                     }
@@ -130,7 +87,6 @@ router.get('/files/', async (req, res) => {
         res.render('error')
     }
 })
-
 
 router.get('/sortBy/:type', (req, res) => {
     switch (req.params.type) {
@@ -149,13 +105,11 @@ router.get('/sortBy/:type', (req, res) => {
     res.redirect('../files')
 })
 
-
 router.get('/add_new', (req, res) => {
     res.render('add_new')
 })
 
 router.get('/home', (req, res) => {
-    console.log('here')
     res.render('home')
 })
 
@@ -164,7 +118,6 @@ router.get('/download/:filename', async (req, res, next) => {
         fs.unlink(ShouldBeDeletedNext, () => {
             console.log('Файл удален')
         })
-
         console.log(`Поступил запрос на скачивание ${req.params.filename}`)
         const filename = req.params.filename;
         console.log(filename)
@@ -172,7 +125,6 @@ router.get('/download/:filename', async (req, res, next) => {
             chunkSizeBytes: 1024,
             bucketName: 'uploads'
         });
-
         gridfsbucket.openDownloadStreamByName(filename).pipe(fs.createWriteStream('./' + filename)).on('error', function (error) {
             console.log("error" + error);
             res.status(404).json({
@@ -180,18 +132,13 @@ router.get('/download/:filename', async (req, res, next) => {
             });
         }).on('finish', async function () {
             console.log('Файл загружен на сервер');
-
             const file = `./${req.params.filename}`;
             await res.download(file)
             console.log('Файл начал загрузку на клиент')
             ShouldBeDeletedNext = file
-
         });
     } catch (e) {
         res.render('error')
     }
-
 })
-
-
 module.exports = router;

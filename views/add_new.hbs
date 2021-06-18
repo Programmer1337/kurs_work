@@ -1,13 +1,5 @@
 <div class="content">
-    <!--    <section class="insert">-->
-    <!--        <form action="/upload" method="post" enctype="multipart/form-data">-->
-    <!--            <div>-->
-    <!--                <label for="file">Fiels</label>-->
-    <!--                <input type="file" id="file" name="file">-->
-    <!--            </div>-->
 
-    <!--        </form>-->
-    <!--    </section>-->
     <form action="/upload" method="post" enctype="multipart/form-data">
         <div class="file-field input-field ">
             <div class="btn blue-grey darken-2">
@@ -20,7 +12,6 @@
         </div>
         <button class="btn waves-effect waves-light blue-grey darken-2" type="submit" name="action" onclick="
         {
-console.log(document.getElementsByClassName('load_ring')[0])
             document.getElementsByClassName('load_ring')[0].style.visibility = 'visible'
 }">Submit
             <i class="material-icons right">send</i>
