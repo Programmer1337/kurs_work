@@ -7,7 +7,7 @@ const Grid = require('gridfs-stream')
 const fs = require('fs')
 
 let ShouldBeDeletedNext = ''
-const url = 'mongodb+srv://Igor:FMKwLV4wxaT9dcT@cluster0.u2jtm.mongodb.net/my_base?retryWrites=true&w=majority'
+const url = 'mongodb+srv://###:####@cluster0.u2jtm.mongodb.net/my_base?retryWrites=true&w=majority'
 
 console.log('Started')
 
